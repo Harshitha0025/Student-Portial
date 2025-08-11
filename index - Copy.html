@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Portal Demo — Student Portal Demo</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#9aa9bf;
+      --accent-1:#6ee7b7;
+      --accent-2:#7c5cff;
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.03);
+      --success:#34d399;
+      --danger:#fb7185;
+      --max-width:1200px;
+      --radius:14px;
+      --shadow: 0 6px 20px rgba(2,6,23,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Inter", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #071029 0%, #071c2e 55%, #081627 100%);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding: 28px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .container{
+      width:100%;
+      max-width:var(--max-width);
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:24px;
+      align-items:start;
+    }
+
+    /* Header / Topbar */
+    header {
+      position:sticky;
+      top:28px;
+      z-index:40;
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:6px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      color:#02111a;
+      box-shadow: 0 6px 20px rgba(92,50,255,0.18);
+    }
+    .title{
+      line-height:1;
+    }
+    .title h1{font-size:18px;margin:0;font-weight:700}
+    .title p{margin:0;font-size:12px;color:var(--muted)}
+
+    .actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .btn {
+      background:var(--glass);
+      color:inherit;
+      border:1px solid rgba(255,255,255,0.04);
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:13px;
+    }
+    .btn:active{transform:translateY(1px)}
+
+    /* Left / Main column */
+    .main {
+      min-height:600px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(2,1fr);
+      gap:16px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:16px;
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .card h3{margin:0 0 8px 0;font-size:14px}
+    .muted { color:var(--muted); font-size:13px }
+
+    /* Schedule / calendar */
+    .schedule {
+      display:grid;
+      grid-template-columns: 70px 1fr;
+      gap:12px;
+      align-items:start;
+    }
+    .time-col{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      color:var(--muted);
+      font-size:13px;
+      padding-top:6px;
+    }
+    .time-col div{height:48px; display:flex; align-items:center}
+    .week {
+      overflow:auto;
+      padding-bottom:6px;
+    }
+
+    .day {
+      display:flex;
+      gap:10px;
+      margin-bottom:12px;
+      align-items:flex-start;
+    }
+    .slot{
+      min-height:48px;
+      flex:1;
+      border-radius:10px;
+      padding:8px;
+      background: linear-gradient(90deg, rgba(124,92,255,0.14), rgba(110,231,183,0.06));
+      border:1px solid rgba(255,255,255,0.02);
+      font-size:13px;
+    }
+
+    /* Assignments list */
+    .list {display:flex;flex-direction:column;gap:12px}
+    .assignment{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      padding:10px;
+      background:var(--glass-2);
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .assignment .meta{display:flex;gap:10px;align-items:center}
+    .chip{
+      background: rgba(20,30,40,0.6);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .due { color:var(--danger); font-weight:700 }
+
+    /* progress */
+    .progress-row {display:flex; gap:12px; align-items:center}
+    .progress-bar {
+      background: rgba(255,255,255,0.04);
+      border-radius:999px;
+      overflow:hidden;
+      height:12px;
+      width:100%;
+    }
+    .progress-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));width:60%}
+
+    /* right column */
+    .sidebar {
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      position:sticky;
+      top:120px;
+    }
+    .card.small{padding:12px}
+    .techs {display:flex; gap:8px; flex-wrap:wrap}
+    .tech {font-size:12px; background: rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px; color:var(--muted)}
+
+    /* Chat */
+    .chat {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      height:320px;
+    }
+    .messages{flex:1; overflow:auto; padding:8px; display:flex; flex-direction:column; gap:8px}
+    .msg{max-width:78%; padding:8px 12px; border-radius:12px; font-size:13px}
+    .msg.me{align-self:flex-end; background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); color:#02111a}
+    .msg.them{align-self:flex-start; background: rgba(255,255,255,0.02)}
+    .chat-input {display:flex; gap:8px; margin-top:8px}
+    .chat-input input{flex:1;padding:10px;border-radius:10px;border:none;background:rgba(255,255,255,0.03); color:inherit}
+
+    /* footer small */
+    footer.note { text-align:center; color:var(--muted); margin-top:10px; font-size:13px; grid-column:1/-1 }
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .container{grid-template-columns: 1fr; padding:16px}
+      .sidebar{position:static; top:auto}
+      .grid {grid-template-columns: 1fr}
+      header{position:static}
+    }
+
+    /* small helpers */
+    .row{display:flex;gap:10px;align-items:center}
+    .small{font-size:12px}
+    .tag {font-weight:700; font-size:12px; color:var(--muted)}
+    .qr {width:84px; height:84px; background:#fff; border-radius:8px; display:grid; place-items:center; color:#021; font-weight:700; font-size:11px}
+  </style>
+</head>
+<body>
+  <main class="container" role="main" aria-labelledby="main-heading">
+    <header>
+      <div class="brand" aria-hidden="false">
+        <div class="logo" aria-hidden="true">SP</div>
+        <div class="title">
+          <h1 id="main-heading">Student Portal Demo</h1>
+          <p class="muted">A compact dashboard to track learning & assignments</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="btn-screenshot" title="Export Screenshot">Export</button>
+        <button class="btn" id="btn-github">Open GitHub</button>
+      </div>
+    </header>
+
+    <!-- Main column -->
+    <section class="main" aria-label="Dashboard">
+      <div class="grid">
+        <!-- Schedule card -->
+        <section class="card" aria-labelledby="schedule-title">
+          <h3 id="schedule-title">Weekly Schedule</h3>
+          <p class="muted">Upcoming classes & sessions</p>
+          <div class="schedule" style="margin-top:12px">
+            <div class="time-col" aria-hidden="true">
+              <div>9:00</div>
+              <div>10:00</div>
+              <div>11:00</div>
+              <div>12:00</div>
+            </div>
+
+            <div class="week" id="schedule-week" role="list">
+              <!-- JS will populate days -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Assignments -->
+        <section class="card" aria-labelledby="assignments-title">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <h3 id="assignments-title">Assignments</h3>
+            <span class="tag">Due soon</span>
+          </div>
+          <p class="muted">Open tasks and due dates</p>
+
+          <div class="list" id="assignments-list" style="margin-top:12px">
+            <!-- JS populates -->
+          </div>
+        </section>
+
+        <!-- Progress -->
+        <section class="card" aria-labelledby="progress-title">
+          <h3 id="progress-title">Progress Overview</h3>
+          <p class="muted">Track scores and completion</p>
+
+          <div style="display:flex;gap:16px;align-items:center;margin-top:12px">
+            <!-- radial -->
+            <div style="width:140px;height:140px;display:grid;place-items:center">
+              <svg viewBox="0 0 36 36" width="120" height="120" aria-hidden="true">
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="#6ee7b7"/>
+                    <stop offset="1" stop-color="#7c5cff"/>
+                  </linearGradient>
+                </defs>
+                <path d="M18 2.0845
+                         a 15.9155 15.9155 0 0 1 0 31.831
+                         a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+                <path id="progress-arc" d="" fill="none" stroke="url(#g1)" stroke-width="2.8" stroke-linecap="round" />
+                <text x="18" y="20.4" text-anchor="middle" font-size="5" fill="#e6eef8" font-weight="700" id="progress-text">0%</text>
+              </svg>
+            </div>
+
+            <div style="flex:1">
+              <div class="small muted">Overall completion</div>
+              <div class="progress-row" style="margin-top:8px">
+                <div style="flex:1">
+                  <div style="display:flex;justify-content:space-between">
+                    <div class="small muted">Coursework</div><div class="small">72%</div>
+                  </div>
+                  <div class="progress-bar" style="margin-top:6px"><i style="width:72%"></i></div>
+                </div>
+              </div>
+
+              <div class="progress-row" style="margin-top:10px">
+                <div style="flex:1">
+                  <div style="display:flex;justify-content:space-between">
+                    <div class="small muted">Assessments</div><div class="small">58%</div>
+                  </div>
+                  <div class="progress-bar" style="margin-top:6px"><i style="width:58%"></i></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick links / resources -->
+        <aside class="card" aria-labelledby="resources-title">
+          <h3 id="resources-title">Quick Links</h3>
+          <p class="muted">Access frequently used resources</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+            <button class="btn" onclick="alert('Open resource: Learning Hub')">Learning Hub</button>
+            <button class="btn" onclick="alert('Open resource: Library')">Library</button>
+            <button class="btn" onclick="alert('Open resource: Profile')">Profile</button>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Spacer row: two-column heavy content -->
+      <div class="grid" style="grid-template-columns: 1fr 1fr;">
+        <section class="card" aria-labelledby="team-title">
+          <h3 id="team-title">Team & Roles</h3>
+          <p class="muted">Contributors on this demo</p>
+          <ul style="margin-top:12px; padding-left:16px;">
+            <li><strong>Chandra Palecha</strong> — Designer / Counsellor</li>
+            <li><strong>Member 2</strong> — Developer</li>
+            <li><strong>Member 3</strong> — QA / Tester</li>
+          </ul>
+          <div style="margin-top:12px" class="muted small">Tech stack: HTML • CSS • Vanilla JS • SVG</div>
+        </section>
+
+        <section class="card" aria-labelledby="notes-title">
+          <h3 id="notes-title">Project Notes</h3>
+          <p class="muted">Publish & presentation tips</p>
+          <ol style="margin-top:12px">
+            <li>Replace mock screenshots with live UI images</li>
+            <li>Export poster at 300 DPI for print</li>
+            <li>Update README with team branches & PR links</li>
+          </ol>
+        </section>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="card small" aria-labelledby="stack-title">
+        <h4 id="stack-title" style="margin:0 0 8px 0">Tech Stack</h4>
+        <div class="techs">
+          <div class="tech">HTML</div>
+          <div class="tech">CSS</div>
+          <div class="tech">JavaScript</div>
+          <div class="tech">SVG</div>
+          <div class="tech">GitHub</div>
+        </div>
+      </div>
+
+      <div class="card small" aria-labelledby="chat-title">
+        <h4 id="chat-title" style="margin:0 0 8px 0">Live Chat (Demo)</h4>
+        <div class="chat" role="region" aria-label="Chat demo">
+          <div class="messages" id="messages" tabindex="0">
+            <!-- messages -->
+          </div>
+
+          <div class="chat-input">
+            <input id="chat-msg" placeholder="Type a message..." aria-label="Type a message" />
+            <button class="btn" id="send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card small" aria-labelledby="repo-title">
+        <h4 id="repo-title" style="margin:0 0 8px 0">Repository</h4>
+        <div class="muted small">Link to the GitHub repo (replace link in code)</div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <div class="qr" title="QR">QR</div>
+          <div style="flex:1">
+            <div style="font-weight:700">github.com/your-org/your-repo</div>
+            <div class="muted small">Replace with your repo URL</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <footer class="note">Designed for demo purposes • Save as poster or export images for uploads</footer>
+  </main>
+
+  <!-- Assignment modal (hidden) -->
+  <dialog id="assign-modal" style="border:none;border-radius:12px;padding:0;overflow:hidden;background:transparent;box-shadow:var(--shadow)">
+    <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px; border-radius:12px; width:min(680px,90vw)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="modal-title" style="margin:0">Assignment Title</h3>
+        <button class="btn" onclick="document.getElementById('assign-modal').close()">Close</button>
+      </div>
+      <p class="muted small" id="modal-meta" style="margin-top:6px">Due: --</p>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+      <div id="modal-body" class="muted" style="line-height:1.6;font-size:14px">
+        Assignment details go here...
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" onclick="markDone()">Mark as Done</button>
+        <button class="btn" onclick="downloadAssignment()">Download</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    /***********************
+     * Mock Data
+     ***********************/
+    const scheduleData = [
+      { day:'Mon', time:'09:00', title:'Math - Algebra', duration:'60m' },
+      { day:'Mon', time:'11:00', title:'Computer Science', duration:'60m' },
+      { day:'Tue', time:'10:00', title:'English Literature', duration:'60m' },
+      { day:'Wed', time:'09:00', title:'Physics Lab', duration:'120m' },
+      { day:'Thu', time:'12:00', title:'PE / Wellness', duration:'60m' },
+    ];
+
+    const assignments = [
+      { id:1, title:'Math — Quadratic Equations', due:'2025-08-17', status:'Open', details:'Solve the problem set on quadratic equations. Submit PDF.' },
+      { id:2, title:'CS — Mini Project', due:'2025-08-20', status:'In Review', details:'Build a small JS app to demonstrate DOM manipulation.' },
+      { id:3, title:'English — Essay', due:'2025-08-15', status:'Open', details:'Write an essay on modern literature (1000–1200 words).' },
+    ];
+
+    /***********************
+     * Utilities
+     ***********************/
+    function formatDateISO(isoStr){
+      const d = new Date(isoStr + 'T00:00:00');
+      return d.toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
+    }
+
+    /***********************
+     * Populate schedule
+     ***********************/
+    const scheduleEl = document.getElementById('schedule-week');
+    function renderSchedule(){
+      // group by day name order Mon..Sun
+      const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      days.forEach(day => {
+        const dayNode = document.createElement('div');
+        dayNode.className = 'day';
+        const label = document.createElement('div');
+        label.style.width='80px';
+        label.innerHTML = `<div style="font-weight:700">${day}</div><div class="muted small">Previews</div>`;
+        // find items for this day
+        const slots = document.createElement('div');
+        slots.style.flex='1';
+        const items = scheduleData.filter(s => s.day === day);
+        if(items.length === 0){
+          const empty = document.createElement('div');
+          empty.className='slot';
+          empty.style.opacity=.45;
+          empty.textContent = 'No classes';
+          slots.appendChild(empty);
+        } else {
+          items.forEach(it => {
+            const s = document.createElement('div');
+            s.className='slot';
+            s.innerHTML = `<strong>${it.title}</strong><div class="muted small">${it.time} • ${it.duration}</div>`;
+            slots.appendChild(s);
+          });
+        }
+
+        dayNode.appendChild(label);
+        dayNode.appendChild(slots);
+        scheduleEl.appendChild(dayNode);
+      });
+    }
+
+    /***********************
+     * Assignments list
+     ***********************/
+    const assignmentsList = document.getElementById('assignments-list');
+    function renderAssignments(){
+      assignmentsList.innerHTML = '';
+      assignments.sort((a,b)=> new Date(a.due) - new Date(b.due));
+      assignments.forEach(a => {
+        const item = document.createElement('div');
+        item.className = 'assignment';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.innerHTML = `<div style="display:flex;flex-direction:column">
+                            <strong>${a.title}</strong>
+                            <div class="muted small">${a.details.slice(0,60)}${a.details.length>60?'...':''}</div>
+                          </div>`;
+        const actions = document.createElement('div');
+        actions.style.display='flex';
+        actions.style.flexDirection='column';
+        actions.style.alignItems='flex-end';
+        actions.innerHTML = `<div class="chip small">${a.status}</div>
+                             <div class="muted small">Due: <span class="due">${formatDateISO(a.due)}</span></div>
+                             <div style="margin-top:6px"><button class="btn" onclick="openAssignment(${a.id})">View</button></div>`;
+        item.appendChild(meta);
+        item.appendChild(actions);
+        assignmentsList.appendChild(item);
+      });
+    }
+
+    function openAssignment(id){
+      const a = assignments.find(x=>x.id===id);
+      if(!a) return;
+      document.getElementById('modal-title').textContent = a.title;
+      document.getElementById('modal-meta').textContent = `Due: ${formatDateISO(a.due)} • Status: ${a.status}`;
+      document.getElementById('modal-body').textContent = a.details;
+      document.getElementById('assign-modal').showModal();
+    }
+
+    function markDone(){
+      const t = document.getElementById('modal-title').textContent;
+      const a = assignments.find(x=>x.title === t);
+      if(a){ a.status = 'Completed'; renderAssignments(); document.getElementById('assign-modal').close(); alert('Marked completed') }
+    }
+    function downloadAssignment(){
+      const t = document.getElementById('modal-title').textContent;
+      const a = assignments.find(x=>x.title === t);
+      if(!a) return;
+      const blob = new Blob([`Assignment: ${a.title}\n\nDetails:\n${a.details}`],{type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const aLink = document.createElement('a');
+      aLink.href = url; aLink.download = `${a.title.replace(/\s+/g,'_')}.txt`; aLink.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /***********************
+     * Progress arc (SVG) - draw arc based on percent
+     ***********************/
+    function setProgress(percent){
+      percent = Math.max(0, Math.min(100, percent));
+      document.getElementById('progress-text').textContent = percent + '%';
+      // Create arc path (circle circumference approach)
+      const radius = 15.9155; // for viewBox circle
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference * (1 - percent / 100);
+      const path = document.getElementById('progress-arc');
+      // stroke-dasharray with arc
+      path.setAttribute('d', '');
+      path.setAttribute('stroke-dasharray', `${circumference}`);
+      path.setAttribute('stroke-dashoffset', `${offset}`);
+      // Use CSS transform rotate(-90deg) on the path to start at top:
+      path.style.transform = 'rotate(-90deg)';
+      path.style.transformOrigin = '18px 18px';
+      // animate quickly
+      path.style.transition = 'stroke-dashoffset 700ms ease';
+    }
+
+    /***********************
+     * Simple chat simulation
+     ***********************/
+    const messagesEl = document.getElementById('messages');
+    const chatInput = document.getElementById('chat-msg');
+    const sendBtn = document.getElementById('send-btn');
+
+    const initialMsgs = [
+      {by:'them', text:'Hi! When is the CS mini project due?'},
+      {by:'me', text:'It is due Aug 20. Are you working on the UI?'},
+      {by:'them', text:'Yes — can you share assets?'}
+    ];
+
+    function renderMessages(){
+      messagesEl.innerHTML = '';
+      const arr = window.chatHistory || initialMsgs;
+      arr.forEach(m=>{
+        const node = document.createElement('div');
+        node.className = 'msg ' + (m.by === 'me' ? 'me' : 'them');
+        node.textContent = m.text;
+        messagesEl.appendChild(node);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    sendBtn.addEventListener('click', ()=>{
+      const txt = chatInput.value.trim();
+      if(!txt) return;
+      window.chatHistory = window.chatHistory || initialMsgs.slice();
+      window.chatHistory.push({by:'me', text: txt});
+      chatInput.value = '';
+      renderMessages();
+      // auto reply (demo)
+      setTimeout(()=> {
+        window.chatHistory.push({by:'them', text: 'Thanks — will check and revert.'});
+        renderMessages();
+      }, 900);
+    });
+
+    chatInput.addEventListener('keydown', e => { if(e.key === 'Enter') sendBtn.click() });
+
+    /***********************
+     * Buttons: Export & GitHub
+     ***********************/
+    document.getElementById('btn-github').addEventListener('click', ()=> {
+      window.open('https://github.com/your-org/your-repo', '_blank');
+    });
+
+    document.getElementById('btn-screenshot').addEventListener('click', async ()=> {
+      // Quick export: use HTML2Canvas-like approach is heavy; instead ask user to use Print to PDF,
+      // Here show a small helpful dialog:
+      alert('To export poster: use your browser\'s Print → Save as PDF, or take a screenshot at high resolution.');
+    });
+
+    /***********************
+     * Init render
+     ***********************/
+    renderSchedule();
+    renderAssignments();
+    renderMessages();
+    setTimeout(()=>setProgress(64), 200); // example percent
+
+    /***********************
+     * Accessibility helpers and small polish
+     ***********************/
+    // keyboard accessibility: focus first chat input
+    chatInput.setAttribute('aria-label','Send message to classmates');
+
+  </script>
+</body>
+</html>
